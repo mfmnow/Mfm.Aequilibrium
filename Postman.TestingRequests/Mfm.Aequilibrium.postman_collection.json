@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "cb433cd0-0712-440c-b3e6-7bcd802e7115",
+		"name": "Mfm.Aequilibrium",
+		"description": "Mfm.Aequilibrium",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "https://localhost:44319/api/transformer/create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Predaking11\",\r\n  \"type\": \"D\",\r\n  \"strength\": 1,\r\n  \"intelligence\": 1,\r\n  \"speed\": 1,\r\n  \"endurance\": 4,\r\n  \"rank\": 1,\r\n  \"courage\": 4,\r\n  \"firepower\": 4,\r\n  \"skill\": 4\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44319/api/transformer/create",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44319",
+					"path": [
+						"api",
+						"transformer",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:44319/api/transformer/update",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 8,\r\n  \"name\": \"Bluestreakrrrr\",\r\n  \"type\": \"A\",\r\n  \"strength\": 6,\r\n  \"intelligence\": 6,\r\n  \"speed\": 7,\r\n  \"endurance\": 9,\r\n  \"rank\": 9,\r\n  \"courage\": 2,\r\n  \"firepower\": 9,\r\n  \"skill\": 7\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44319/api/transformer/update",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44319",
+					"path": [
+						"api",
+						"transformer",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:44319/api/transformer/delete",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 8\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44319/api/transformer/delete",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44319",
+					"path": [
+						"api",
+						"transformer",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:44319/api/transformers-battles/get-result",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[3,4,5]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44319/api/transformers-battles/get-result",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44319",
+					"path": [
+						"api",
+						"transformers-battles",
+						"get-result"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:44319/api/transformer/getall",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44319/api/transformer/getall",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44319",
+					"path": [
+						"api",
+						"transformer",
+						"getall"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

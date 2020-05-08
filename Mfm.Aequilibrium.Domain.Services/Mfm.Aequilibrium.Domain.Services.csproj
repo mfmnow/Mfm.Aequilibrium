@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mfm.Aequilibrium.Data.Contracts\Mfm.Aequilibrium.Data.Contracts.csproj" />
+    <ProjectReference Include="..\Mfm.Aequilibrium.Data.Entities\Mfm.Aequilibrium.Data.Entities.csproj" />
+    <ProjectReference Include="..\Mfm.Aequilibrium.Domain.Contracts\Mfm.Aequilibrium.Domain.Contracts.csproj" />
+    <ProjectReference Include="..\Mfm.Aequilibrium.Shared\Mfm.Aequilibrium.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
