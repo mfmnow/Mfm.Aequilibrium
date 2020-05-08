@@ -24,7 +24,7 @@
 1. From browser open https://localhost:_port_/swagger
 
 ## CI/CD
-1. Project is integrated with AzureDevOps Build agent per commit
+1. Project is integrated with AzureDevOps Build agent per commit at https://mfmnow.visualstudio.com/Mfm.Aequilibrium/_build
 
 ## Contact for questions or support
 mfmnow@yahoo.com
