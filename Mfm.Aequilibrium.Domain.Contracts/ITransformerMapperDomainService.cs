@@ -6,5 +6,6 @@ namespace Mfm.Aequilibrium.Domain.Contracts
     public interface ITransformerMapperDomainService
     {
         TransformerDisplayModel TransformerEntityToTransformerDisplayModel(TransformerEntity transformerEntity);
+        TransformerBattleModel TransformerEntityToTransformerBattleModel(TransformerEntity transformerEntity);
     }
 }

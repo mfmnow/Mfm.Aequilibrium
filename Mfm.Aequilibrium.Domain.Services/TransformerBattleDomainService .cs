@@ -29,16 +29,23 @@ namespace Mfm.Aequilibrium.Domain.Services
         public async Task<TransformerBattleResultModel> GetTransformersBattleResult(List<int> transformersIds) 
         {
             var allTransformersEntities = await _transformerEntityDataAccess.GetTransformerEntitiesByIds(transformersIds);
-            var autobots = allTransformersEntities.Where(t => t.Type == (byte)TransformerType.A).OrderBy(t => t.Rank).ToList();
-            var decepticons = allTransformersEntities.Where(t => t.Type == (byte)TransformerType.D).OrderBy(t => t.Rank).ToList();
+            var allTransformerBattleModels = allTransformersEntities.Select(t => 
+            { 
+                return _transformerMapperDomainService.TransformerEntityToTransformerBattleModel(t); 
+            }
+            ).ToList();
+            var autobots = allTransformerBattleModels.Where(t => t.TransformerType == TransformerType.A)
+                .OrderBy(t => t.Rank).ToList();
+            var decepticons = allTransformerBattleModels.Where(t => t.TransformerType == TransformerType.D)
+                .OrderBy(t => t.Rank).ToList();
 
             var smallerTeamCount = autobots.Count <= decepticons.Count ? autobots.Count : decepticons.Count;
-            var autobotsWins = 0;
-            var decepticonsWins = 0;
+            var losersList = new List<int>();
             for (var i = 0; i < smallerTeamCount; i++) {
                 try
                 {
-                    await GetBattleWinner(autobots[i], decepticons[i], ref autobotsWins, ref decepticonsWins);
+                    var winnerTransformer = await GetBattleWinner(autobots[i], decepticons[i]);
+                    MarkAsWinner(autobots[i], decepticons[i], winnerTransformer);
                 }
                 catch (InvalidBattleException ex) {
                     return new TransformerBattleResultModel
@@ -49,21 +56,25 @@ namespace Mfm.Aequilibrium.Domain.Services
                     };
                 }
             }
+            var autobotsWins = autobots.Where(t => t.TransformerBattleStatus == TransformerBattleStatus.Winned).Count();
+            var decepticonsWins = decepticons.Where(t => t.TransformerBattleStatus == TransformerBattleStatus.Winned).Count();
             var winner = autobotsWins > decepticonsWins ? char.Parse(TransformerType.A.ToString()) :
                 decepticonsWins > autobotsWins ? char.Parse(TransformerType.D.ToString()) : '\0';
             var survivorsFromTheLosingTeam = new List<TransformerDisplayModel>();
-            if (autobotsWins > decepticonsWins && decepticons.Count > autobots.Count) 
+            if (autobotsWins > decepticonsWins) 
             {
-                survivorsFromTheLosingTeam = decepticons.Skip(Math.Max(0, decepticons.Count() - smallerTeamCount)).
+                survivorsFromTheLosingTeam = decepticons.Where(t => t.TransformerBattleStatus != TransformerBattleStatus.Losed).
                     Select(e => {
-                    return _transformerMapperDomainService.TransformerEntityToTransformerDisplayModel(e);
+                        var entity = allTransformersEntities.Where(en => en.Id == e.Id).FirstOrDefault();
+                        return _transformerMapperDomainService.TransformerEntityToTransformerDisplayModel(entity);
                 }).ToList();
             }
-            else if (decepticonsWins > autobotsWins && autobots.Count > decepticons.Count)
+            else if (decepticonsWins > autobotsWins)
             {
-                survivorsFromTheLosingTeam = autobots.Skip(Math.Max(0, autobots.Count() - smallerTeamCount)).
+                survivorsFromTheLosingTeam = autobots.Where(t => t.TransformerBattleStatus != TransformerBattleStatus.Losed).
                     Select(e => {
-                        return _transformerMapperDomainService.TransformerEntityToTransformerDisplayModel(e);
+                        var entity = allTransformersEntities.Where(en => en.Id == e.Id).FirstOrDefault();
+                        return _transformerMapperDomainService.TransformerEntityToTransformerDisplayModel(entity);
                     }).ToList();
             }
             return new TransformerBattleResultModel { 
@@ -73,8 +84,7 @@ namespace Mfm.Aequilibrium.Domain.Services
             };
         }
 
-        public Task GetBattleWinner(TransformerEntity autobotsTransformer, TransformerEntity decepticonsTransformer,
-            ref int autobotsWins, ref int decepticonsWins)
+        public Task<TransformerType> GetBattleWinner(TransformerBattleModel autobotsTransformer, TransformerBattleModel decepticonsTransformer)
         {
             if (_appSettings.WildCardNames.Contains(autobotsTransformer.Name) &&
                 _appSettings.WildCardNames.Contains(decepticonsTransformer.Name))
@@ -82,42 +92,51 @@ namespace Mfm.Aequilibrium.Domain.Services
                 throw new InvalidBattleException("Two WildCardNames met each other");
             }
             else if (_appSettings.WildCardNames.Contains(autobotsTransformer.Name)) {
-                autobotsWins++;
+                return Task.FromResult(TransformerType.A);
             }
             else if (_appSettings.WildCardNames.Contains(decepticonsTransformer.Name))
             {
-                decepticonsWins++;
+                return Task.FromResult(TransformerType.D);
             }
             else if (autobotsTransformer.Courage >= decepticonsTransformer.Courage + 4
-                && autobotsTransformer.Strength >= decepticonsTransformer.Courage + 3)
+                && autobotsTransformer.Strength >= decepticonsTransformer.Strength + 3)
             {
-                autobotsWins++;
+                return Task.FromResult(TransformerType.A);
             }
             else if (decepticonsTransformer.Courage >= autobotsTransformer.Courage + 4
-                && decepticonsTransformer.Strength >= autobotsTransformer.Courage + 3)
+                && decepticonsTransformer.Strength >= autobotsTransformer.Strength + 3)
             {
-                decepticonsWins++;
+                return Task.FromResult(TransformerType.D);
             }
-            else if (autobotsTransformer.Skill >= decepticonsTransformer.Courage + 3)
+            else if (autobotsTransformer.Skill >= decepticonsTransformer.Skill + 3)
             {
-                autobotsWins++;
+                return Task.FromResult(TransformerType.A);
             }
-            else if (decepticonsTransformer.Skill >= autobotsTransformer.Courage + 3)
+            else if (decepticonsTransformer.Skill >= autobotsTransformer.Skill + 3)
             {
-                decepticonsWins++;
+                return Task.FromResult(TransformerType.D);
             }
             else
             {
                 if (autobotsTransformer.OverallRating > decepticonsTransformer.OverallRating)
                 {
-                    autobotsWins++;
+                    return Task.FromResult(TransformerType.A);
                 }
                 if (decepticonsTransformer.OverallRating > autobotsTransformer.OverallRating)
                 {
-                    decepticonsWins++;
+                    return Task.FromResult(TransformerType.D);
                 }
             }
-            return Task.CompletedTask;
+            return null;
+        }
+
+        public void MarkAsWinner(TransformerBattleModel autobotsTransformer, TransformerBattleModel decepticonsTransformer,
+            TransformerType transformerType)
+        {
+            autobotsTransformer.TransformerBattleStatus = transformerType == TransformerType.A ? 
+                TransformerBattleStatus.Winned : TransformerBattleStatus.Losed;
+            decepticonsTransformer.TransformerBattleStatus = transformerType == TransformerType.D ?
+                TransformerBattleStatus.Winned : TransformerBattleStatus.Losed;
         }
     }
 }

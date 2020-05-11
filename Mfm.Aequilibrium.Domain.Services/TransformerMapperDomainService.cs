@@ -26,5 +26,21 @@ namespace Mfm.Aequilibrium.Domain.Services
                 OverallRating = transformerEntity.OverallRating
             };
         }
+
+        public TransformerBattleModel TransformerEntityToTransformerBattleModel(TransformerEntity transformerEntity)
+        {
+            return new TransformerBattleModel
+            {
+                Courage = transformerEntity.Courage,
+                Id = transformerEntity.Id,
+                Name = transformerEntity.Name,
+                Strength = transformerEntity.Strength,
+                Skill = transformerEntity.Skill,
+                OverallRating = transformerEntity.OverallRating,
+                TransformerType = (TransformerType)transformerEntity.Type,
+                TransformerBattleStatus = TransformerBattleStatus.DidNotBattle,
+                Rank = transformerEntity.Rank
+            };
+        }
     }
 }
